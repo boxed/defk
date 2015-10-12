@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/boxed/defk.svg)](https://travis-ci.org/boxed/defk)
+
 # defk
 
 A Clojure library designed to make keyword arguments not just easier but so much easier in fact that you
