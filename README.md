@@ -22,6 +22,8 @@ You can of course also pass in the value of variables with other names or litera
 ```clojure
 (let [c 2]
   (foo a=1 b=c))
+
+(foo a=(+ 1 2 3) b=2)
 ```
 
 The underlying function can be called directly like so:

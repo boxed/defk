@@ -20,22 +20,27 @@
 ;;     (defn foo [{:keys [bar baz]}]
 ;;         ...)
 
-(defmacro keyword-call [name & args]
-  (list (symbol (str name "-raw")) (into {} (for [arg# args]
-                                              (let [matched (re-matches  #"(.+)=(.+)" (str arg#))]
-                                                (if matched
-                                                  (let [[_ left right] matched]
-                                                    [(keyword left) (read-string right)])
-                                                  [(keyword arg#) (symbol arg#)])
-                                              )))))
+(defn keyword-pairs [args]
+  (loop [args args
+         result []]
+    (let [arg (first args)
+          matched (re-matches  #"(.+)=(.*)" (str arg))]
+      (if (= arg nil)
+        result
+        (if matched
+          (let [[_ left right] matched]
+            (if (not= right "")
+              (recur (rest args) (conj result [(keyword left) (read-string right)]))
+              (recur (drop 2 args) (conj result [(keyword left) (first (rest args))]))))
+          (recur (rest args) (conj result [(keyword arg) (symbol arg)])))
+        ))))
 
+(defmacro keyword-call [name & args]
+  (list (symbol (str name "-raw"))
+        (into {} (keyword-pairs args))))
 
 (defmacro defk [name args & body]
   (list 'do
     (list 'def (symbol (str name "-raw")) (list* 'fn [{:keys args}] body))
     `(defmacro ~name [& ~(symbol "args")]
        (list* (quote keyword-call) (quote ~name) ~(symbol "args")))))
-
-
-(defk foo [bar quux]
-  (- bar quux))
