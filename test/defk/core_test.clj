@@ -33,4 +33,9 @@
 
   (testing "expressions as params"
     (is (= -1 (foo bar=(+ 0 1) quux=(+ 0 2)))))
-  )
+
+  (testing "partial-keyword"
+    (is (= -1 ((partial-keyword foo-raw {:bar 1}) {:quux 2})))
+    (is (= -1 ((partial-keyword foo-raw {:bar 1, :quux 8}) {:quux 2})))
+   )
+)

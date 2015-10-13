@@ -41,6 +41,9 @@
 
 (defmacro defk [name args & body]
   (list 'do
-    (list 'def (symbol (str name "-raw")) (list* 'fn [{:keys args}] body))
+    (list 'def (symbol (str name "-raw")) (list* 'fn [{:keys args}] ^:defk-function body))
     `(defmacro ~name [& ~(symbol "args")]
        (list* (quote keyword-call) (quote ~name) ~(symbol "args")))))
+
+(defn partial-keyword [func map-arg]
+  (fn [map-arg2] (func (merge map-arg map-arg2))))
